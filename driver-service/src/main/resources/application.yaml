@@ -1,0 +1,54 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: driver-service
+
+  sql:
+    init:
+      mode: always
+
+  datasource:
+    # currentSchema + default_schema: TA platforms often override DB_URL without ?currentSchema=…
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ride_db?currentSchema=driver}
+    username: ${DB_USERNAME:ride_user}
+    password: ${DB_PASSWORD:ride_password}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        default_schema: driver
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+    consumer:
+      group-id: driver-saga
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      concurrency: 1
+
+logging:
+  level:
+    com.tuananh.driverservice: DEBUG
+
+app:
+  outbox:
+    polling-relay-enabled: true
+    relay-delay-ms: 500

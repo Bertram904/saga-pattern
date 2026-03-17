@@ -1,0 +1,24 @@
+{
+  "name": "postgres-outbox-cdc",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "ride_user",
+    "database.password": "ride_password",
+    "database.dbname": "ride_db",
+    "topic.prefix": "ridehailing.cdc",
+    "table.include.list": "ride.outbox_messages,driver.outbox_messages,payment.outbox_messages",
+    "plugin.name": "pgoutput",
+    "slot.name": "debezium_outbox_slot",
+    "publication.autocreate.mode": "filtered",
+    "publication.name": "dbz_outbox_pub",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka:29092",
+    "schema.history.internal.kafka.topic": "dbz.schema-changes.outbox",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false"
+  }
+}
